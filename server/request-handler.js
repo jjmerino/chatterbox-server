@@ -5,31 +5,66 @@
  * this file and include it in basic-server.js so that it actually works.
  * *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html. */
 
-var handleRequest = function(request, response) {
+var url = require('url');
+var path = require('path');
+var microExpress = {};
+var routes = {
+}
+
+var myExpress ={
+  get: function(url,callback) {
+    routes[url] = routes[url] || {};
+    routes[url]['GET'] = callback;
+  },
+  post: function(url, callback) {
+    routes[url] = routes[url] || {};
+    routes[url]['POST'] = callback;
+  },
+  match: function(url,callback) {
+    routes[url] = routes[url] || {};
+    routes[url]['ANY'] = callback;
+  }
+}
+microExpress.router = myExpress;
+microExpress.routes = routes;
+var routes = microExpress.routes;
+
+exports.handleRequest = function(request, response) {
   /* the 'request' argument comes from nodes http module. It includes info about the
   request - such as what URL the browser is requesting. */
 
   /* Documentation for both request and response can be found at
    * http://nodemanual.org/0.8.14/nodejs_ref_guide/http.html */
-
-  console.log("Serving request type " + request.method + " for url " + request.url);
-
+  // console.log("Serving request type " + request.method + " for url " + request.url);
   var statusCode = 200;
-
   /* Without this line, this server wouldn't work. See the note
    * below about CORS. */
   var headers = defaultCorsHeaders;
-
-  headers['Content-Type'] = "text/plain";
-
+  // headers['Content-Type'] = "text/plain";
+  headers['Content-Type'] = "application/json";
   /* .writeHead() tells our server what HTTP status code to send back */
   response.writeHead(statusCode, headers);
+  var parsedURL= url.parse(request.url, true, true);
+  request.query = parsedURL.query;
+
+  if (routes[parsedURL.pathname] === undefined) {
+    var route = undefined;
+  } else {
+    var route = routes[parsedURL.pathname][request.method] || routes[parsedURL.pathname]['ANY'];
+  }
+  var res = route !== undefined ? route(request,response) : "Thats not a valid route!";
+
+
+  // map the url to a function.
+  // call the function
+  // store the result in a json object
+  // send the json object with the response.end function :D
 
   /* Make sure to always call response.end() - Node will not send
    * anything back to the client until you do. The string you pass to
    * response.end() will be the body of the response - i.e. what shows
    * up in the browser.*/
-  response.end("Hello, World!");
+  response.end(res);
 };
 
 /* These headers will allow Cross-Origin Resource Sharing (CORS).
@@ -43,3 +78,5 @@ var defaultCorsHeaders = {
   "access-control-allow-headers": "content-type, accept",
   "access-control-max-age": 10 // Seconds.
 };
+
+exports.router = microExpress.router;

@@ -10,7 +10,6 @@ function waitForThen(test, cb) {
     test() ? cb.apply(this) : waitForThen(test, cb);
   }, 5);
 }
-
 describe('Node Server Request Listener Function', function() {
   it('Should answer GET requests for /classes/room with a 200 status code', function() {
     // This is a fake server request. Normally, the server would provide this,
