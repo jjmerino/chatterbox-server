@@ -6,10 +6,6 @@ var msgCollection = {
   room1: []
 };
 
-router.match('/', function(req, res) {
-  return "Your awesome at the home page";
-});
-
 router.match('/classes', function(req, res) {
   var processUrl = url.parse(req.url);
 
