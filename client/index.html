@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>chatterbox</title>
+  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
+  <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css"/>
+  <link rel="stylesheet" href="styles/sb.css"/>
+
+  <!-- dependencies -->
+  <script src="bower_components/jquery/jquery.min.js"></script>
+  <script src="bower_components/underscore/underscore-min.js"></script>
+  <script src="bower_components/momentjs/min/moment.min.js"></script>
+  <!-- your scripts -->
+  <script src="scripts/config.js"></script>
+  <script src="scripts/app.js"></script>
+</head>
+<body>
+<div class="navbar-default sidebar" role="navigation">
+  <div class="sidebar-nav navbar-collapse">
+    <ul class="nav">
+      <li class="sidebar-search">
+        <div class="input-group custom-search-form">
+          <input type="text" class="form-control" placeholder="Search...">
+          <span class="input-group-btn">
+              <button class="btn btn-default" type="button">
+                <i class="fa fa-search"></i>
+              </button>
+          </span>
+        </div>
+      </li>
+    </ul>
+    <ul class="nav" id="roomContainer">
+    </ul>
+    <div class="input-group">
+        <input id="newRoomInput" type="text" class="form-control input-sm" placeholder="New room name..."/>
+          <span class="input-group-btn">
+              <button type="submit" value="Create Room" class="btn btn-warning btn-sm" id="createRoomButton">
+              <i class="fa fa-plus-circle"></i> Create Room
+              </button>
+          </span>
+      </div>
+  </div>
+</div>
+<div id="page-wrapper">
+<div class="row">
+  <div class="chat-panel panel panel-default">
+    <div class="panel-heading">
+      <i class="logoicon fa fa-comments fa-fw pull-left fa-5x"></i>
+      <h1 class="">chatterbox</h1>
+    </div>
+    <!-- /.panel-heading -->
+    <div class="panel-body">
+      <ul id='chats' class="chat">
+
+      </ul>
+    </div>
+    <!-- /.panel-body -->
+    <div class="panel-footer">
+      <form id="messageForm">
+      <div class="input-group">
+        <input id="inputText" type="text" class="form-control input-sm" placeholder="Type your message here..."/>
+          <span class="input-group-btn">
+              <input type="submit" value="Send" class="btn btn-warning btn-sm" id="btn-chat">
+
+              </input>
+          </span>
+      </div>
+
+      </form>
+    </div>
+    <!-- /.panel-footer -->
+  </div>
+
+</div>
+
+</div>
+<script id="messageTemplate" type="text/template">
+  <li class="left clearfix">
+    <div class="chat-body clearfix">
+      <div class="header">
+        <strong class="userName primary-font" data-username="<%=username%>"><%=username%></strong>
+        <%if (isFriend) {%>
+          <i class="fa fa-heart" style='color:red'></i>
+        <% } %>
+        <small class="pull-right text-muted">
+          <i class="fa fa-clock-o fa-fw"></i><%=ago%>
+        </small>
+      </div>
+      <p>
+        <%=message%>
+      </p>
+    </div>
+  </li>
+</script>
+<script id="roomItem" type="text/template">
+  <li class="room">
+    <a href="#" class="roomName <%=className%>" data-roomname="<%=name%>">
+      <%=name%>
+    </a>
+  </li>
+</script>
+
+</body>
+</html>

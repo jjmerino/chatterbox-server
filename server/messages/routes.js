@@ -1,5 +1,6 @@
 var router = require('../request-handler').router;
 var path = require('path');
+var url = require('url');
 var msgCollection = {
   messages: [],
   room1: []
@@ -9,8 +10,10 @@ router.match('/', function(req, res) {
   return "Your awesome at the home page";
 });
 
-router.get('/classes', function(req, res) {
-  var base = path.basename(req.url);
+router.match('/classes', function(req, res) {
+  var processUrl = url.parse(req.url);
+
+  var base = path.basename(processUrl.pathname);
   if (msgCollection[base] !== undefined) {
     return JSON.stringify({results:msgCollection[base]});
   } else {
@@ -32,12 +35,13 @@ router.post('/classes', function(req, res) {
       objectId: Math.floor(Math.random()*9999999).toString(16),
       message: obj.message,
       username: obj.username,
-      // roomname: obj.roomname
+      roomname: obj.roomname
     };
     msgCollection.messages.unshift(newObj);
-    // if (newObj.roomname !== undefined) {
+    if (newObj.roomname !== undefined) {
+      msgCollection[roomname] = msgCollection[roomname] || [];
       msgCollection[roomname].unshift(newObj);
-    // }
+    }
     var headers = defaultCorsHeaders;
     headers['Content-Type'] = "application/json";
     res.writeHead(201, headers);
