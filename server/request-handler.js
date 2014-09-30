@@ -1,15 +1,7 @@
-/* You should implement your request handler function in this file.
- * And hey! This is already getting passed to http.createServer()
- * in basic-server.js. But it won't work as is.
- * You'll have to figure out a way to export this function from
- * this file and include it in basic-server.js so that it actually works.
- * *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html. */
-
 var url = require('url');
 var path = require('path');
 var microExpress = {};
-var routes = {
-}
+var routes = {};
 
 var myExpress ={
   get: function(url,callback) {
@@ -30,53 +22,33 @@ microExpress.routes = routes;
 var routes = microExpress.routes;
 
 exports.handleRequest = function(request, response) {
-  /* the 'request' argument comes from nodes http module. It includes info about the
-  request - such as what URL the browser is requesting. */
-
-  /* Documentation for both request and response can be found at
-   * http://nodemanual.org/0.8.14/nodejs_ref_guide/http.html */
-  // console.log("Serving request type " + request.method + " for url " + request.url);
+  var parsedURL = path.resolve(request.url);
+  // console.log("Serving request type " + request.method + " for url " + request.url + '\n');
+  // var parsedURL= url.parse(request.url, true, true);
+  // request.query = parsedURL.query;
   var statusCode = 200;
-  /* Without this line, this server wouldn't work. See the note
-   * below about CORS. */
   var headers = defaultCorsHeaders;
-  // headers['Content-Type'] = "text/plain";
   headers['Content-Type'] = "application/json";
-  /* .writeHead() tells our server what HTTP status code to send back */
   response.writeHead(statusCode, headers);
-  var parsedURL= url.parse(request.url, true, true);
-  request.query = parsedURL.query;
 
-  if (routes[parsedURL.pathname] === undefined) {
-    var route = undefined;
+
+  if (routes[parsedURL] === undefined) {
+    response.writeHead(404, headers);
+    response.end("Invalid Route!");
   } else {
-    var route = routes[parsedURL.pathname][request.method] || routes[parsedURL.pathname]['ANY'];
+    // var route = routes[parsedURL.pathname][request.method] || routes[parsedURL.pathname]['ANY'];
+    var route = routes[parsedURL][request.method] || routes[parsedURL]['ANY'];
+    var res = route(request,response)
+    res && response.end(res);
   }
-  var res = route !== undefined ? route(request,response) : "Thats not a valid route!";
-
-
-  // map the url to a function.
-  // call the function
-  // store the result in a json object
-  // send the json object with the response.end function :D
-
-  /* Make sure to always call response.end() - Node will not send
-   * anything back to the client until you do. The string you pass to
-   * response.end() will be the body of the response - i.e. what shows
-   * up in the browser.*/
-  response.end(res);
 };
 
-/* These headers will allow Cross-Origin Resource Sharing (CORS).
- * This CRUCIAL code allows this server to talk to websites that
- * are on different domains. (Your chat client is running from a url
- * like file://your/chat/client/index.html, which is considered a
- * different domain.) */
+
 var defaultCorsHeaders = {
   "access-control-allow-origin": "*",
   "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
   "access-control-allow-headers": "content-type, accept",
-  "access-control-max-age": 10 // Seconds.
+  "access-control-max-age": 10
 };
 
 exports.router = microExpress.router;
