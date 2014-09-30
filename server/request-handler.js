@@ -21,11 +21,10 @@ microExpress.router = myExpress;
 microExpress.routes = routes;
 var routes = microExpress.routes;
 
-exports.handleRequest = function(request, response) {
-  var parsedURL = path.resolve(request.url);
-  // console.log("Serving request type " + request.method + " for url " + request.url + '\n');
-  // var parsedURL= url.parse(request.url, true, true);
-  // request.query = parsedURL.query;
+var handleRequest = function(request, response) {
+  var parsedURL = request.url.split('/')[1] === 'classes' ? path.dirname(request.url) : path.resolve(request.url);
+  // console.log('Normal: ', parsedURL, '\nDirectory: ', path.dirname(request.url));
+  console.log("Serving request type " + request.method + " for url " + request.url + '\n');
   var statusCode = 200;
   var headers = defaultCorsHeaders;
   headers['Content-Type'] = "application/json";
@@ -36,7 +35,6 @@ exports.handleRequest = function(request, response) {
     response.writeHead(404, headers);
     response.end("Invalid Route!");
   } else {
-    // var route = routes[parsedURL.pathname][request.method] || routes[parsedURL.pathname]['ANY'];
     var route = routes[parsedURL][request.method] || routes[parsedURL]['ANY'];
     var res = route(request,response)
     res && response.end(res);
@@ -51,4 +49,6 @@ var defaultCorsHeaders = {
   "access-control-max-age": 10
 };
 
+exports.handler = handleRequest;
+exports.handleRequest = handleRequest;
 exports.router = microExpress.router;
